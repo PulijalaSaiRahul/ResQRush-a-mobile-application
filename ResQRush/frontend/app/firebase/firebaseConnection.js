@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBhe6uwV_tVs7rMs1R7fce_UL-F80oEu94",
+  apiKey: "",
   authDomain: "resqrush-3204.firebaseapp.com",
   databaseURL: "https://resqrush-3204-default-rtdb.firebaseio.com",
   projectId: "resqrush-3204",
