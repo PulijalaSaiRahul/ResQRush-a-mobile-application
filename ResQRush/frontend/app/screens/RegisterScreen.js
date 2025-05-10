@@ -1,0 +1,655 @@
+// import React, { useState } from "react";
+// import { Picker } from "@react-native-picker/picker";
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   StyleSheet,
+//   Alert,
+// } from "react-native";
+// import { db, auth } from "../firebase/firebaseConnection"; // Import Firebase Auth and Firestore
+// import { createUserWithEmailAndPassword } from "firebase/auth"; // Firebase Auth method
+// import { collection, addDoc } from "firebase/firestore"; // Firestore methods
+// import { v4 as uuidv4 } from "uuid"; // ✅ Import UUID for generating DRIVER_ID
+
+// const RegisterScreen = ({ navigation }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [role, setRole] = useState("driver"); // Default role
+//   const [hospitalId, setHospitalId] = useState(""); // For hospital role
+//   const [zonalRegion, setZonalRegion] = useState(""); // For police role
+//   const [driverId, setDriverId] = useState(uuidv4()); // ✅ Generate a unique DRIVER_ID
+
+//   const handleRegister = async () => {
+//     if (!email || !password || !role) {
+//       Alert.alert("Error", "Please fill in all fields.");
+//       return;
+//     }
+
+//     // Validate role-specific fields
+//     if (role === "hospital" && !hospitalId) {
+//       Alert.alert("Error", "Please enter Hospital ID.");
+//       return;
+//     }
+//     if (role === "police" && !zonalRegion) {
+//       Alert.alert("Error", "Please enter Zonal Region.");
+//       return;
+//     }
+
+//     try {
+//       console.log("Registering user:", email, password, role);
+
+//       // Create user with Firebase Authentication
+//       const userCredential = await createUserWithEmailAndPassword(
+//         auth,
+//         email,
+//         password
+//       );
+//       const user = userCredential.user;
+//       console.log("User registered successfully:", user.uid);
+
+//       // Add user details to Firestore
+//       const usersRef = collection(db, "users");
+//       await addDoc(usersRef, {
+//         uid: user.uid, // Store the Firebase Auth UID
+//         email: email.trim(),
+//         role: role.trim(), // Add role (driver, hospital, police)
+//         DRIVER_ID: role === "driver" ? driverId : null, // ✅ Store DRIVER_ID for drivers
+//         hospitalId: role === "hospital" ? hospitalId.trim() : null, // ✅ Store hospitalId for hospitals
+//         zonalRegion: role === "police" ? zonalRegion.trim() : null, // ✅ Store zonalRegion for police
+//         createdAt: new Date().toISOString(),
+//       });
+//       console.log("User details added to Firestore");
+
+//       // Show success pop-up
+//       Alert.alert("Success", "User registered successfully!", [
+//         { text: "OK", onPress: () => navigation.navigate("Login") }, // Navigate to LoginScreen after OK
+//       ]);
+//     } catch (error) {
+//       console.error("Registration error:", error);
+//       Alert.alert("Error", error.message);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Register</Text>
+
+//       {/* Role Selection Dropdown */}
+//       <View style={styles.dropdownContainer}>
+//         <Text style={styles.label}>Select Role:</Text>
+//         <View style={styles.pickerWrapper}>
+//           <Picker
+//             selectedValue={role}
+//             onValueChange={(itemValue) => setRole(itemValue)}
+//             style={styles.picker}
+//             dropdownIconColor="#000"
+//           >
+//             <Picker.Item label="Driver" value="driver" />
+//             <Picker.Item label="Hospital" value="hospital" />
+//             <Picker.Item label="Police" value="police" />
+//           </Picker>
+//         </View>
+//       </View>
+
+//       {/* Common Fields */}
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Email"
+//         keyboardType="email-address"
+//         autoCapitalize="none"
+//         value={email}
+//         onChangeText={setEmail}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Password"
+//         secureTextEntry
+//         value={password}
+//         onChangeText={setPassword}
+//       />
+
+//       {/* Hospital Role Fields */}
+//       {role === "hospital" && (
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Hospital ID"
+//           value={hospitalId}
+//           onChangeText={setHospitalId}
+//         />
+//       )}
+
+//       {/* Police Role Fields */}
+//       {role === "police" && (
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Zonal Region"
+//           value={zonalRegion}
+//           onChangeText={setZonalRegion}
+//         />
+//       )}
+
+//       {/* Register Button */}
+//       <TouchableOpacity style={styles.button} onPress={handleRegister}>
+//         <Text style={styles.buttonText}>Register</Text>
+//       </TouchableOpacity>
+
+//       {/* Login Link */}
+//       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+//         <Text style={styles.link}>Already have an account? Login</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     padding: 20,
+//   },
+//   title: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//     marginBottom: 20,
+//   },
+//   dropdownContainer: {
+//     width: "100%",
+//     marginBottom: 15,
+//   },
+//   label: {
+//     fontSize: 16,
+//     marginBottom: 5,
+//   },
+//   pickerWrapper: {
+//     borderWidth: 1,
+//     borderColor: "#ccc",
+//     borderRadius: 5,
+//     backgroundColor: "#fff",
+//   },
+//   input: {
+//     width: "100%",
+//     height: 40,
+//     borderColor: "#ccc",
+//     borderWidth: 1,
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     marginBottom: 15,
+//   },
+//   button: {
+//     backgroundColor: "#ef4444",
+//     paddingVertical: 15,
+//     paddingHorizontal: 30,
+//     borderRadius: 12,
+//     width: "100%",
+//     alignItems: "center",
+//   },
+//   buttonText: {
+//     color: "white",
+//     fontSize: 18,
+//     fontWeight: "bold",
+//   },
+//   link: {
+//     marginTop: 15,
+//     color: "#ef4444",
+//     fontSize: 16,
+//   },
+// });
+
+// export default RegisterScreen;
+
+// import 'react-native-get-random-values'; // Polyfill for UUID
+// import React, { useState } from "react";
+// import { Picker } from "@react-native-picker/picker";
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   StyleSheet,
+//   Alert,
+// } from "react-native";
+// import { db, auth } from "../firebase/firebaseConnection";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { doc, setDoc } from "firebase/firestore"; // Import doc and setDoc
+// import { v4 as uuidv4 } from "uuid";
+
+// const RegisterScreen = ({ navigation }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [role, setRole] = useState("driver"); // Default role
+//   const [hospitalId, setHospitalId] = useState(""); // For hospital role
+//   const [zonalRegion, setZonalRegion] = useState(""); // For police role
+//   const [driverId, setDriverId] = useState(uuidv4()); // Generate a unique DRIVER_ID
+
+//   const handleRegister = async () => {
+//     if (!email || !password || !role) {
+//       Alert.alert("Error", "Please fill in all fields.");
+//       return;
+//     }
+  
+//     // Validate role-specific fields
+//     if (role === "hospital" && !hospitalId) {
+//       Alert.alert("Error", "Please enter Hospital ID.");
+//       return;
+//     }
+//     if (role === "police" && !zonalRegion) {
+//       Alert.alert("Error", "Please enter Zonal Region.");
+//       return;
+//     }
+  
+//     try {
+//       console.log("Registering user:", email, password, role);
+  
+//       // Create user with Firebase Authentication
+//       const userCredential = await createUserWithEmailAndPassword(
+//         auth,
+//         email,
+//         password
+//       );
+//       const user = userCredential.user;
+//       console.log("User registered successfully:", user.uid);
+  
+//       // Prepare user data for Firestore
+//       const userData = {
+//         uid: user.uid, // Store the Firebase Auth UID
+//         email: email.trim(),
+//         role: role.trim(),
+//         createdAt: new Date().toISOString(),
+//       };
+  
+//       // Add role-specific fields
+//       if (role === "driver") {
+//         userData.driverId = user.uid; // Store DRIVER_ID for drivers
+//       } else if (role === "hospital") {
+//         // Extract numeric part of the hospital ID
+//         const numericHospitalId = hospitalId.replace(/\D/g, ""); // Remove non-numeric characters
+//         userData.hospitalId = numericHospitalId; // Store only the numeric part
+//       } else if (role === "police") {
+//         userData.zonalRegion = zonalRegion.trim(); // Store zonalRegion for police
+//       }
+  
+//       // Add user details to Firestore with the UID as the document ID
+//       const userRef = doc(db, "users", user.uid); // Use UID as the document ID
+//       await setDoc(userRef, userData); // Use setDoc instead of addDoc
+//       console.log("User details added to Firestore with UID as document ID");
+  
+//       // If the user is a driver, create an entry in the ambulances collection
+//       if (role === "driver") {
+//         const ambulanceRef = doc(db, "ambulances", user.uid); // Use UID as the document ID
+//         await setDoc(ambulanceRef, {
+//           driverId: user.uid, // Store DRIVER_ID for drivers
+//           latitude: 0, // Default latitude
+//           longitude: 0, // Default longitude
+//           timestamp: new Date().toISOString(),
+//         });
+//         console.log("Ambulance details added to Firestore with UID as document ID");
+//       }
+  
+//       // Show success pop-up
+//       Alert.alert("Success", "User registered successfully!", [
+//         { text: "OK", onPress: () => navigation.navigate("Login") },
+//       ]);
+//     } catch (error) {
+//       console.error("Registration error:", error);
+//       Alert.alert("Error", error.message);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Register</Text>
+
+//       {/* Role Selection Dropdown */}
+//       <View style={styles.dropdownContainer}>
+//         <Text style={styles.label}>Select Role:</Text>
+//         <View style={styles.pickerWrapper}>
+//           <Picker
+//             selectedValue={role}
+//             onValueChange={(itemValue) => setRole(itemValue)}
+//             style={styles.picker}
+//             dropdownIconColor="#000"
+//           >
+//             <Picker.Item label="Driver" value="driver" />
+//             <Picker.Item label="Hospital" value="hospital" />
+//             <Picker.Item label="Police" value="police" />
+//           </Picker>
+//         </View>
+//       </View>
+
+//       {/* Common Fields */}
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Email"
+//         keyboardType="email-address"
+//         autoCapitalize="none"
+//         value={email}
+//         onChangeText={setEmail}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Password"
+//         secureTextEntry
+//         value={password}
+//         onChangeText={setPassword}
+//       />
+
+//       {/* Hospital Role Fields */}
+//       {role === "hospital" && (
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Hospital ID"
+//           value={hospitalId}
+//           onChangeText={setHospitalId}
+//         />
+//       )}
+
+//       {/* Police Role Fields */}
+//       {role === "police" && (
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Zonal Region"
+//           value={zonalRegion}
+//           onChangeText={setZonalRegion}
+//         />
+//       )}
+
+//       {/* Register Button */}
+//       <TouchableOpacity style={styles.button} onPress={handleRegister}>
+//         <Text style={styles.buttonText}>Register</Text>
+//       </TouchableOpacity>
+
+//       {/* Login Link */}
+//       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+//         <Text style={styles.link}>Already have an account? Login</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     padding: 20,
+//   },
+//   title: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//     marginBottom: 20,
+//   },
+//   dropdownContainer: {
+//     width: "100%",
+//     marginBottom: 15,
+//   },
+//   label: {
+//     fontSize: 16,
+//     marginBottom: 5,
+//   },
+//   pickerWrapper: {
+//     borderWidth: 1,
+//     borderColor: "#ccc",
+//     borderRadius: 5,
+//     backgroundColor: "#fff",
+//   },
+//   input: {
+//     width: "100%",
+//     height: 40,
+//     borderColor: "#ccc",
+//     borderWidth: 1,
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     marginBottom: 15,
+//   },
+//   button: {
+//     backgroundColor: "#ef4444",
+//     paddingVertical: 15,
+//     paddingHorizontal: 30,
+//     borderRadius: 12,
+//     width: "100%",
+//     alignItems: "center",
+//   },
+//   buttonText: {
+//     color: "white",
+//     fontSize: 18,
+//     fontWeight: "bold",
+//   },
+//   link: {
+//     marginTop: 15,
+//     color: "#ef4444",
+//     fontSize: 16,
+//   },
+// });
+
+// export default RegisterScreen;
+
+import 'react-native-get-random-values'; // Polyfill for UUID
+import React, { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { db, auth } from "../firebase/firebaseConnection";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; // Import doc and setDoc
+import { v4 as uuidv4 } from "uuid";
+
+const RegisterScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("driver"); // Default role
+  const [hospitalId, setHospitalId] = useState(""); // For hospital role
+  const [zonalRegion, setZonalRegion] = useState(""); // For police role
+  const [driverId, setDriverId] = useState(uuidv4()); // Generate a unique DRIVER_ID
+
+  const handleRegister = async () => {
+    if (!email || !password || !role) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+  
+    // Validate role-specific fields
+    if (role === "hospital" && !hospitalId) {
+      Alert.alert("Error", "Please enter Hospital ID.");
+      return;
+    }
+    if (role === "police" && !zonalRegion) {
+      Alert.alert("Error", "Please enter Zonal Region.");
+      return;
+    }
+  
+    try {
+      console.log("Registering user:", email, password, role);
+  
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      console.log("User registered successfully:", user.uid);
+  
+      // Prepare user data for Firestore
+      const userData = {
+        uid: user.uid, // Store the Firebase Auth UID
+        email: email.trim(),
+        role: role.trim(),
+        createdAt: new Date().toISOString(),
+      };
+  
+      // Add role-specific fields
+      if (role === "driver") {
+        userData.driverId = user.uid; // Store DRIVER_ID for drivers
+      } else if (role === "hospital") {
+        // Extract numeric part of the hospital ID
+        const numericHospitalId = hospitalId.replace(/\D/g, ""); // Remove non-numeric characters
+        userData.hospitalId = numericHospitalId; // Store only the numeric part
+      } else if (role === "police") {
+        userData.zonalRegion = zonalRegion.trim(); // Store zonalRegion for police
+      }
+      // Note: No additional fields needed for 'user' role
+  
+      // Add user details to Firestore with the UID as the document ID
+      const userRef = doc(db, "users", user.uid); // Use UID as the document ID
+      await setDoc(userRef, userData); // Use setDoc instead of addDoc
+      console.log("User details added to Firestore with UID as document ID");
+  
+      // If the user is a driver, create an entry in the ambulances collection
+      if (role === "driver") {
+        const ambulanceRef = doc(db, "ambulances", user.uid); // Use UID as the document ID
+        await setDoc(ambulanceRef, {
+          driverId: user.uid, // Store DRIVER_ID for drivers
+          latitude: 0, // Default latitude
+          longitude: 0, // Default longitude
+          timestamp: new Date().toISOString(),
+        });
+        console.log("Ambulance details added to Firestore with UID as document ID");
+      }
+  
+      // Show success pop-up
+      Alert.alert("Success", "User registered successfully!", [
+        { text: "OK", onPress: () => navigation.navigate("Login") },
+      ]);
+    } catch (error) {
+      console.error("Registration error:", error);
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Register</Text>
+
+      {/* Role Selection Dropdown */}
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.label}>Select Role:</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={role}
+            onValueChange={(itemValue) => setRole(itemValue)}
+            style={styles.picker}
+            dropdownIconColor="#000"
+          >
+            <Picker.Item label="Driver" value="driver" />
+            <Picker.Item label="Hospital" value="hospital" />
+            <Picker.Item label="Police" value="police" />
+            <Picker.Item label="User" value="user" />
+          </Picker>
+        </View>
+      </View>
+
+      {/* Common Fields */}
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+
+      {/* Hospital Role Fields */}
+      {role === "hospital" && (
+        <TextInput
+          style={styles.input}
+          placeholder="Hospital ID"
+          value={hospitalId}
+          onChangeText={setHospitalId}
+        />
+      )}
+
+      {/* Police Role Fields */}
+      {role === "police" && (
+        <TextInput
+          style={styles.input}
+          placeholder="Zonal Region"
+          value={zonalRegion}
+          onChangeText={setZonalRegion}
+        />
+      )}
+
+      {/* Register Button */}
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
+
+      {/* Login Link */}
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.link}>Already have an account? Login</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  dropdownContainer: {
+    width: "100%",
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    backgroundColor: "#fff",
+  },
+  input: {
+    width: "100%",
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  button: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  link: {
+    marginTop: 15,
+    color: "#ef4444",
+    fontSize: 16,
+  },
+});
+
+export default RegisterScreen;
