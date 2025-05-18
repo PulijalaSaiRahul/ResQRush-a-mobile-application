@@ -7,7 +7,7 @@ import DriverScreen from '../screens/DriverScreen';
 import HospitalScreen from '../screens/HospitalScreen';
 import PoliceScreen from '../screens/PoliceScreen';
 import DriverNavigationScreen from '../screens/DriverNavigationScreen';
-import HospitalNavigationScreen from '../screens/HospitalNavigationScreen'; 
+import HospitalNavigationScreen from '../screens/HospitalNavigationScreen';
 import PoliceNavigationScreen from '../screens/PoliceNavigationScreen';
 import UserScreen from '../screens/UserScreen';
 import HospitalSelectionScreen from '../screens/HospitalSelectionScreen';
@@ -35,22 +35,62 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Driver"
         component={DriverScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          title: 'Ambulance',
+          headerStyle: {
+            backgroundColor: '#3b5998',
+          },
+          headerTintColor: '#fff', 
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
       />
       <Stack.Screen
         name="Hospital"
         component={HospitalScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          title: 'Ambulance',
+          headerStyle: {
+            backgroundColor: '#388E3C',
+          },
+          headerTintColor: '#fff', 
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
       />
       <Stack.Screen
         name="Police"
         component={PoliceScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          title: 'Police Control Room',
+          headerStyle: {
+            backgroundColor: '#ef4444',
+          },
+          headerTintColor: '#fff', 
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
       />
       <Stack.Screen
         name="User"
         component={UserScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          title: 'Report Emergency',
+          headerStyle: {
+            backgroundColor: '#3b5998',
+          },
+          headerTintColor: '#fff', 
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
       />
       <Stack.Screen
         name="DriverNavigation"
